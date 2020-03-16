@@ -7,18 +7,12 @@
 		}
 
 
-		public function display() {
-			$query = $this->db->get_where('tb_tarefas', array("id_user" => 1));
-			return $query->result();
-		}
-
-
 		public function cadastro() {
 			$dados = array(
 				'id_user' => 1,
-				'titulo' => $_POST['titulo'],
-				'descricao' => $_POST['descricao'],
-				'data_hora' => $_POST['prazo'].":00"
+				'titulo' => $this->input->post('titulo'),
+				'descricao' => $this->input->post('descricao'),
+				'data_hora' => $this->input->post('prazoData')." ".$this->input->post('prazoHora')
 			);
 			$this->db->insert('tb_tarefas', $dados);
 		}
