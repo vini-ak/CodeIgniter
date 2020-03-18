@@ -1,3 +1,7 @@
+<?php
+$this->load->view('navbar');
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -89,7 +93,6 @@
 			consultar();
 
 			$("#btnAdd").click(function(){
-				jQuery.noConflict(); 
 				$('#modalCadastro').modal('show');
 				$('#modalCadastro').find('.modal-title').text('Nova tarefa');
 				$('#formCadastro').attr('action', '<?php echo base_url(); ?>index.php/main/cadastro');
@@ -105,9 +108,16 @@
 				let result = '';
 
 
-				// Validando o título da tarefa
+
+
+				// Caso seja passado um título vazio será apresentada uma mensagem de erro abaixo do input Titulo do modal
 				if(titulo.val() == ''){
 					titulo.addClass('is-invalid');
+					if($("#groupTitulo").find("#erro1").length == 0) {
+						erro1 = "<small id='erro1' class='text-danger'>O título não pode ser nulo</small>";
+						$("#groupTitulo").append(erro1);
+					}
+					
 				} else {
 					titulo.removeClass('is-invalid');
 					$('#erro1').remove();
@@ -115,13 +125,20 @@
 				}
 
 
-				// *** Lembrando que a descrição da tarefa é opcional! ***
+
+				// Lembrando que a descrição da tarefa é opcional!
 				
 
 
-				// Validando a data da atividade
+
+				// Caso seja passada uma data inválida, será apresentada uma mensagem de erro abaixo do input data do modal.
 				if(data.val() == ''){
 					data.addClass('is-invalid');
+					if($("#groupData").find("#erro2").length == 0) {
+						erro2 = "<small id='erro2' class='text-danger'>A data precisa ser informada</small>";
+						$("#groupData").append(erro2);
+					}
+
 				} else {
 					data.removeClass('is-invalid');
 					$('#erro2').remove();
@@ -129,9 +146,15 @@
 				}
 
 
-				// Validando a hora
+
+
+				// Caso seja passada uma hora inválida, será apresentada uma mensagem de erro no modal.
 				if(hora.val() == ''){
 					hora.addClass('is-invalid');
+					if($("#groupHora").find("#erro3").length == 0) {
+						erro3 = "<small id='erro3' class='text-danger'>Insira uma hora válida</small>";
+						$("#groupHora").append(erro3);
+					}
 				} else {
 					hora.removeClass('is-invalid');
 					$('#erro3').remove();
@@ -139,12 +162,9 @@
 				}				
 
 
-				// Verificando se todas as entradas estão corretas
-				if(result == '123') {
-					console.log('oi');
-					// Caso não haja erro nos preenchimentos dos campos será realizada uma requisição ajax.
-					jQuery.noConflict(); 
 
+				if(result == '123') {
+					// Caso não haja erro nos preenchimentos dos campos será realizada uma requisição ajax.
 					$.ajax({
 						type: 'ajax',
 						url: urlCadastro,
@@ -153,36 +173,21 @@
 						async: true,
 						dataType: 'json',
 						success: function(response) {
-							console.log(response);
+							consultar();
 						},
 						error: function() {
 							alert('Oxe boy, alguma coisa deu errado. Viagem do carai...');
 						}
+					}).done(function() {
+						// Se a requisição tiver sido feita com sucesso, o modal poderá ser fechado.
+						$('#modalCadastro').modal('hide');
 					});
 
 				} else {
-					// Caso haja erro serão printadas na tela mensagens de invalidez
-
-					// Nome inváálido:
-					if(!result.includes('1')){
-						erro1 = "<small id='erro1' class='text-danger'>O título não pode ser nulo</small>";
-						$("#groupTitulo").append(erro1);
-					}
-
-					// Data inválida:
-					if(!result.includes('2')){
-						erro2 = "<small id='erro2' class='text-danger'>A data precisa ser informada</small>";
-						$("#groupData").append(erro2);
-					}
-
-					// Hora inválida:
-					if(!result.includes('3')){
-						erro3 = "<small id='erro3' class='text-danger'>Insira uma hora válida</small>";
-						$("#groupHora").append(erro3);
-					}
-
-
+					$("#btnSave").removeAttr('data-dismiss');
 				}
+
+		
 			});
 
 			function consultar(){

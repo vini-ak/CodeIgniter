@@ -1,0 +1,16 @@
+1) SELECT * FROM `bebidas` ORDER BY nome_bebida ASC;
+2) SELECT * FROM `bebidas` ORDER BY nome_bebida DESC;
+3) SELECT * FROM `bebidas` WHERE nome_bebida != "Blue Moon";
+4) SELECT UPPER(nome_bebida) FROM `bebidas`;
+5) SELECT nome_bebida FROM `bebidas` WHERE qtd1 > qtd2;
+6) SELECT MIN(qtd1), AVG(qtd1), MAX(qtd1), MIN(qtd2), AVG(qtd2), MAX(qtd2)  FROM `bebidas`;
+7) SELECT * FROM bebidas WHERE nome_bebida LIKE 'B%';
+8) SELECT nome_bebida FROM `info_bebidas` WHERE preco BETWEEN 3.0 AND 4.0 ;
+9) SELECT * FROM `info_bebidas` WHERE gelo = 'Y' AND calorias > 50;
+10) SELECT AVG(preco), AVG(carboidratos), AVG(calorias) FROM `info_bebidas` # Tentar descobrir se tem alguma função pra formatar a saída de AVG(preco)
+11) SELECT cor, AVG(preco), AVG(carboidratos), AVG(calorias) FROM `info_bebidas` GROUP BY cor;
+12) SELECT cor, AVG(preco), AVG(carboidratos), AVG(calorias), count(*) FROM `info_bebidas` GROUP BY cor;
+13) SELECT * FROM info_bebidas WHERE carboidratos < 5 OR preco < 3.00;
+14) SELECT nome_bebida FROM `info_bebidas` WHERE SUBSTRING(nome_bebida,1,1) >= 'L';
+15) SELECT * FROM `info_bebidas` WHERE carboidratos IS NULL OR calorias IS NULL;
+16) SELECT nome_bebida FROM `info_bebidas` EXCEPT SELECT nome_bebida FROM bebidas;

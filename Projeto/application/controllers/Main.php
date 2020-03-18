@@ -14,15 +14,20 @@ class Main extends CI_Controller {
 		$this->load->helper('form');
 
 		// Carregando a view principal
-		$this->load->view('navbar');
 		$this->load->view('main_view');
 	}
 
 	public function cadastro() {
 		// Adicionando uma nova tabela no banco de dados
 		$this->load->model('Cadastro_model');
-		$this->Cadastro_model->cadastro();
-		$this->index();
+		$result = $this->Cadastro_model->cadastro();
+
+		$msg['success'] = false;
+		if($result){
+			$msg['success'] = true;
+		}
+
+		echo json_encode($msg);
 	}
 
 	public function consultar() {
