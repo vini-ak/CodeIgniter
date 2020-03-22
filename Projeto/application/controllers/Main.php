@@ -36,6 +36,12 @@ class Main extends CI_Controller {
 		$result = $this->Consultar_model->consultar();
 		echo json_encode($result);
 	}
+
+	public function editar() {
+		// Acessando o model editar
+		$this->load->model('Editar_model');
+		
+	}
 }
 
 ?>

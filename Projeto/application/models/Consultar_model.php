@@ -6,6 +6,10 @@ class Consultar_model extends CI_Model {
 		parent::__construct();
 	}
 	public function consultar() {
+		# Ordenando por ordem alfabética
+		$this->db->order_by('data_hora', 'asc');
+
+		# Pegando todas as tarefas relacionadas a um mesmo usuário
 		$query = $this->db->get_where('tb_tarefas', array("id_user" => 1));
 		if($query->num_rows() > 0) {
 			return $query->result();

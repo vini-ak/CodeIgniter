@@ -25,6 +25,8 @@ $this->load->view('navbar');
 	<div class="container seEsforcaEhPraJesus">
 		<h1 class="text-center text-title">Atividades</h1>
 
+		<div class="alert alert-info" style="display: none;"></div>
+
 		<!-- Adicionar uma nova tarefa -->
 		<button id="btnAdd" class="btn btn-primary mb-4"=>Adicionar uma nova tarefa</button>
 
@@ -173,14 +175,13 @@ $this->load->view('navbar');
 						async: true,
 						dataType: 'json',
 						success: function(response) {
+							$('#modalCadastro').modal('hide');
 							consultar();
+							$('.alert-info').html("Tarefa cadastrada com sucesso").fadeIn().delay(4000).fadeOut("slow");
 						},
 						error: function() {
 							alert('Oxe boy, alguma coisa deu errado. Viagem do carai...');
 						}
-					}).done(function() {
-						// Se a requisição tiver sido feita com sucesso, o modal poderá ser fechado.
-						$('#modalCadastro').modal('hide');
 					});
 
 				} else {
@@ -209,8 +210,8 @@ $this->load->view('navbar');
 										'<td>'+data[i]['descricao']+'</td>' + 
 										'<td>'+data[i]['data_hora']+'</td>' +
 										'<td>' +
-											'<a href="javascript:;" class="btn btn-info btn-sm">Editar</a>' +
-											'<a href="javascript:;" class="btn btn-danger btn-sm">Deletar</a>' +
+											'<a href="javascript:;" class="btn btn-info btn-sm btnEdit" data"' +data[i]['id_tarefa'] +'">Editar</a>' +
+											'<a href="javascript:;" class="btn btn-danger btn-sm btnDel" data="'+ data[i]['id_tarefa'] +'">Deletar</a>' +
 										'</td>' +
 									'</tr>';
 						}
@@ -221,6 +222,32 @@ $this->load->view('navbar');
 					}
 				});
 			}
+		});
+
+		// Edit
+		$("#tarefas").on('click', '.btnEdit', function(){
+			let id = $(this).attr('data');
+			$('#modalCadastro').modal('show');
+			$('#modalCadastro').find('.modal-title').text('Editar tarefa');
+			$('#formCadastro').attr('action', "<?php echo base_url() ?>index.php/Main/editar");
+
+			$.ajax({
+				type: 'ajax',
+				method: 'get',
+				dataType: 'json',
+				url: "<?php echo base_url() ?>index.php/Main/editar",
+				data: {"id": id},
+				async: true,
+				success: function() {
+					$("#modalCadastro").modal('hide');
+					consultar();
+					$(".alert-info").html("Tarefa alterada com sucesso").fadeIn().delay(4000).fadeOut("slow");
+				},
+				error: function() {
+					alert('Erro ao editar');
+				}
+			});
+			
 		});
 	</script>
 </body>
