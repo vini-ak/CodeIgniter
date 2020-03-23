@@ -14,6 +14,7 @@
 				'descricao' => $this->input->post('descricao'),
 				'data_hora' => $this->input->post('prazoData')." ".$this->input->post('prazoHora')
 			);
+			
 			$this->db->insert('tb_tarefas', $dados);
 
 			if($this->db->affected_rows() > 0) {

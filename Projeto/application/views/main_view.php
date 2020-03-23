@@ -10,20 +10,25 @@ $this->load->view('navbar');
 
 	<style type="text/css">
 		.seEsforcaEhPraJesus {
-			margin-top: 150px
+			margin-top: 50px;
 		}
 
-		.text-title {
-			margin-bottom: 30px;
-			font-family: monospace;
+
+		.apresentacao {
+			margin-top: 120px;
 		}
 	</style>
 </head>
 
 <body>
 
+	<div class="apresentacao container p-3 bg-dark text-white">
+		<h1>Atividades</h1>
+		<h5>CRUD com as tarefas que preciso realizar no meu cotidiano</h5>
+
+	</div>
+
 	<div class="container seEsforcaEhPraJesus">
-		<h1 class="text-center text-title">Atividades</h1>
 
 		<div class="alert alert-info" style="display: none;"></div>
 
@@ -32,13 +37,13 @@ $this->load->view('navbar');
 
 		<!-- Nomes dos campos da tabela -->
 		<table class="table table-bordered table-responsive">
-			<thead>
+			<thead class="thead-dark">
 				<tr>
-					<td>ID</td>
-					<td>Título</td>
-					<td>Descrição</td>
-					<td>Prazo</td>
-					<td>Ações</td>
+					<th scope="col" class="col-1">#</th>
+					<th scope="col" class="col-2">Título</th>
+					<th scope="col" class="col-6">Descrição</th>
+					<th scope="col" class="col-2">Prazo</th>
+					<th scope="col" class="col-3">Ações</th>
 				</tr>
 			</thead>
 
@@ -61,6 +66,7 @@ $this->load->view('navbar');
 				</div>
 				<div class="modal-body">
 					<form id="formCadastro" action="" method='post'>
+						<input type="hidden" name="tarefaID" value="0">
 						<div class="form-group" id="groupTitulo">
 							<label for="#idNome" class="label-control">Título</label>
 							<input type="text" name="titulo" class="form-control" id="idNome" aria-describedby="Título da atividade" placeholder="Insira um título para a atividade">
@@ -100,6 +106,8 @@ $this->load->view('navbar');
 				$('#formCadastro').attr('action', '<?php echo base_url(); ?>index.php/main/cadastro');
 			});
 
+
+			// Cadastro
 			$('#btnSave').click(function(){
 				let urlCadastro = $("#formCadastro").attr("action");
 				let formulario = $("#formCadastro").serialize();
@@ -140,7 +148,6 @@ $this->load->view('navbar');
 						erro2 = "<small id='erro2' class='text-danger'>A data precisa ser informada</small>";
 						$("#groupData").append(erro2);
 					}
-
 				} else {
 					data.removeClass('is-invalid');
 					$('#erro2').remove();
@@ -167,6 +174,7 @@ $this->load->view('navbar');
 
 				if(result == '123') {
 					// Caso não haja erro nos preenchimentos dos campos será realizada uma requisição ajax.
+					// Esta requisição é para CADASTRO de novas TAREFAS.
 					$.ajax({
 						type: 'ajax',
 						url: urlCadastro,
@@ -187,8 +195,6 @@ $this->load->view('navbar');
 				} else {
 					$("#btnSave").removeAttr('data-dismiss');
 				}
-
-		
 			});
 
 			function consultar(){
@@ -206,11 +212,11 @@ $this->load->view('navbar');
 						for(i=0; i < data.length; i++) {
 							html += '<tr>' +
 										'<td>'+data[i]['id_tarefa']+'</td>' + 
-										'<td>'+data[i]['titulo']+'</td>' + 
+										'<td id="titulo'+data[i]['id_tarefa']+'">'+data[i]['titulo']+'</td>' + 
 										'<td>'+data[i]['descricao']+'</td>' + 
 										'<td>'+data[i]['data_hora']+'</td>' +
 										'<td>' +
-											'<a href="javascript:;" class="btn btn-info btn-sm btnEdit" data"' +data[i]['id_tarefa'] +'">Editar</a>' +
+											'<a href="javascript:;" class="btn btn-info btn-sm btnEdit" data="' +data[i]['id_tarefa'] +'">Editar</a>' +
 											'<a href="javascript:;" class="btn btn-danger btn-sm btnDel" data="'+ data[i]['id_tarefa'] +'">Deletar</a>' +
 										'</td>' +
 									'</tr>';
@@ -222,32 +228,41 @@ $this->load->view('navbar');
 					}
 				});
 			}
-		});
 
-		// Edit
-		$("#tarefas").on('click', '.btnEdit', function(){
-			let id = $(this).attr('data');
-			$('#modalCadastro').modal('show');
-			$('#modalCadastro').find('.modal-title').text('Editar tarefa');
-			$('#formCadastro').attr('action', "<?php echo base_url() ?>index.php/Main/editar");
+			// Deletar
+			$("#tarefas").on("click", '.btnDel', function() {
 
-			$.ajax({
-				type: 'ajax',
-				method: 'get',
-				dataType: 'json',
-				url: "<?php echo base_url() ?>index.php/Main/editar",
-				data: {"id": id},
-				async: true,
-				success: function() {
-					$("#modalCadastro").modal('hide');
-					consultar();
-					$(".alert-info").html("Tarefa alterada com sucesso").fadeIn().delay(4000).fadeOut("slow");
-				},
-				error: function() {
-					alert('Erro ao editar');
+				let id = parseInt($(this).attr('data'));	// id_tarefa
+				let titulo = '#titulo' + id;	// Titulo da atividade
+
+				// Alert
+				resposta = confirm('Você tem certeza que deseja deletar "' + $("#tarefas").find(titulo).text() + '"?');
+
+				if(resposta) {
+					$.ajax({
+						type: 'ajax',
+						url: "<?php echo base_url() ?>index.php/main/deletar",
+						data: {'id_tarefa': id},
+						dataType: 'json',
+						method: 'get',
+						async: true,
+						success: function() {
+							consultar();
+							$(".alert-info").html("A tarefa removida com sucesso").fadeIn().delay(4000).fadeOut("slow");
+						},
+						error: function() {
+							alert("Não foi possível deletar");
+						}
+					});
 				}
 			});
-			
+
+			$("#tarefas").on('click', '.btnEdit', function() {
+				let id = parseInt($(this).attr('data'));	// id_tarefa
+				let titulo = $("#tarefas").find('#titulo' + id).text();	// Titulo da atividade
+				$("#modalCadastro").find(".modal-title").text(titulo);
+				
+			});
 		});
 	</script>
 </body>

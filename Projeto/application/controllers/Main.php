@@ -40,7 +40,27 @@ class Main extends CI_Controller {
 	public function editar() {
 		// Acessando o model editar
 		$this->load->model('Editar_model');
-		
+		$result = $this->Editar_model->editar();
+
+		$msg['success'] = false;
+		if($result){
+			$msg['success'] = true;
+		}
+
+		echo json_encode($msg);
+	}
+
+	public function deletar() {
+		// Acessando o model de delecao
+		$this->load->model('Deletar_model');
+		$result = $this->Deletar_model->deletar();
+
+		$msg['success'] = false;
+		if($result) {
+			$msg['success'] = true;
+		}
+
+		echo json_encode($msg);
 	}
 }
 
