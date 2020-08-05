@@ -30,9 +30,9 @@
 
 		<!-- NAVEGAÇÃO -->
 		<div class="collapse navbar-collapse" id="nav-target">
-			<form class="form-inline navbar-nav ml-auto">
-				<input type="search" name="pesquisar" placeholder="Pesquisar..." aria-label="Pesquisar">
-				<button class="btn btn-info btn-sm ml-2">Buscar</button>
+			<form id="formPesquisa" class="form-inline navbar-nav ml-auto" method="post">
+				<input class="form-control mr-sm-2 col-9" type="search" name="pesquisar" placeholder="Pesquisar..." aria-label="Pesquisar">
+				<button class="form-control btn btn-sm btn-info" id="btnPesquisar" class="btn btn-info btn-sm ml-2">Buscar</button>
 			</form>
 		</div>
 	</nav>

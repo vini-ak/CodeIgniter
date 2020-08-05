@@ -66,17 +66,17 @@ $this->load->view('navbar');
 				</div>
 				<div class="modal-body">
 					<form id="formCadastro" action="" method='post'>
-						<input type="hidden" name="tarefaID" value="0">
+						<input type="hidden" id="inputHidden" name="tarefaID" value="0">
 						<div class="form-group" id="groupTitulo">
-							<label for="#idNome" class="label-control">Título</label>
+							<label for="#idNome" class="label-control" id="labelTitulo">Título</label>
 							<input type="text" name="titulo" class="form-control" id="idNome" aria-describedby="Título da atividade" placeholder="Insira um título para a atividade">
 						</div>
 						<div class="form-group" id="groupDescricao">
-							<label for="idDescricao">Descrição</label>
+							<label for="idDescricao" id="labelDesc">Descrição</label>
 							<textarea type="text" rowspan=1 name="descricao" class="form-control" id="idDescricao" aria-describedby="Descrição da atividade" placeholder="Descreva um pouco mais sobre sua tarefa..."></textarea>
 						</div>
 						<div class="form-group" id="groupPrazo">
-							<label for="#idPrazo">Prazo</label>
+							<label for="#idPrazo" id="labelPrazo">Prazo</label>
 							<div id="groupData">
 								<small class="text-secondary font-italic legenda">*A data precisa ser informada no formato mm/dd/aaaa</small>
 								<input type="date" name="prazoData" class="form-control" id="idPrazo" aria-describedby="Prazo da atividade" placeholder="Defina um prazo">
@@ -96,6 +96,26 @@ $this->load->view('navbar');
 		</div>	
 	</div>
 
+	<div id="modalPesquisa" class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title">Pesquisa</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p>Modal body text goes here.</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary">Save changes</button>
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
 	<script>
 		$(function(){
 			consultar();
@@ -103,20 +123,35 @@ $this->load->view('navbar');
 			$("#btnAdd").click(function(){
 				$('#modalCadastro').modal('show');
 				$('#modalCadastro').find('.modal-title').text('Nova tarefa');
-				$('#formCadastro').attr('action', '<?php echo base_url(); ?>index.php/main/cadastro');
+				$('#modalCadastro').find('#labelTitulo').text('Título');
+				$('#modalCadastro').find('#labelDesc').text('Descrição');
+				$('#modalCadastro').find('#labelPrazo').text('Prazo');
+				$('#modalCadastro').find("#btnSave").text("Adicionar tarefa");
+
+				if($("#btnSave").hasClass("editar")) {
+					$("#btnSave").removeClass("editar");
+				}
 			});
 
 
 			// Cadastro
 			$('#btnSave').click(function(){
-				let urlCadastro = $("#formCadastro").attr("action");
+
+				if($("#btnSave").hasClass("editar")) {
+					// URL para edição
+					$("#formCadastro").attr("action", "<?php echo base_url() ?>index.php/main/editar");
+				} else {
+					// URL para cadastro
+					$('#formCadastro').attr('action', '<?php echo base_url(); ?>index.php/main/cadastro');
+				}
+
+				let urlForm = $("#formCadastro").attr("action");
 				let formulario = $("#formCadastro").serialize();
 
 				let titulo = $("input[name=titulo]");
 				let data = $("input[name=prazoData]");
 				let hora = $("input[name=prazoHora]");
 				let result = '';
-
 
 
 
@@ -177,17 +212,27 @@ $this->load->view('navbar');
 					// Esta requisição é para CADASTRO de novas TAREFAS.
 					$.ajax({
 						type: 'ajax',
-						url: urlCadastro,
+						url: urlForm,
 						method: 'post',
 						data: formulario,
 						async: true,
 						dataType: 'json',
 						success: function(response) {
+							console.log(formulario);
+							console.log(urlForm);
+
 							$('#modalCadastro').modal('hide');
 							consultar();
-							$('.alert-info').html("Tarefa cadastrada com sucesso").fadeIn().delay(4000).fadeOut("slow");
+							if($("#btnSave").hasClass("editar")) {
+								$(".alert-info").html("A tarefa foi alterada com sucesso.").fadeIn().delay(4000).fadeOut("slow");
+							} else {
+								$('.alert-info').html("Tarefa cadastrada com sucesso").fadeIn().delay(4000).fadeOut("slow");
+							}
+							
 						},
 						error: function() {
+							console.log(formulario);
+							console.log(urlForm);
 							alert('Oxe boy, alguma coisa deu errado. Viagem do carai...');
 						}
 					});
@@ -257,11 +302,48 @@ $this->load->view('navbar');
 				}
 			});
 
+			// Editar
 			$("#tarefas").on('click', '.btnEdit', function() {
 				let id = parseInt($(this).attr('data'));	// id_tarefa
+
 				let titulo = $("#tarefas").find('#titulo' + id).text();	// Titulo da atividade
 				$("#modalCadastro").find(".modal-title").text(titulo);
-				
+
+				$("#modalCadastro").find("#labelTitulo").text("Novo título");
+				$("#modalCadastro").find("#labelDesc").text("Nova descrição");
+				$("#modalCadastro").find("#labelPrazo").text("Novo prazo");
+				$("#formCadastro").attr("action", "<?php echo base_url() ?>index.php/main/editar");
+
+				$("#modalCadastro").modal("show");
+
+				// Agora o btnSave (descrito acima) dá conta do recado.
+				$("#btnSave").text("Salvar alterações");
+				$("#btnSave").addClass("editar");
+
+				$("#modalCadastro").find("#inputHidden").attr("value", id);
+			});
+
+
+			// Pesquisar pela navbar
+			$("#btnPesquisar").click(function() {
+				let formPesquisa = $("#formPesquisa").serialize();
+				let urlPesquisa = "<?php echo base_url() ?>index.php/main/pesquisar";
+				$("#formPesquisa").attr("action", urlPesquisa);
+
+				$.ajax({
+					type: 'ajax',
+					url: urlPesquisa,
+					async: true,
+					data: formPesquisa,
+					method: 'post',
+					dataType: 'json',
+					success: function(data) {
+						console.log(data);
+					},
+					error: function() {
+						$("#modalPesquisa").find(".modal-body").text("Não foram encontrados resultados para a pesquisa T.T");
+					}
+				});
 			});
 		});
 	</script>

@@ -62,6 +62,14 @@ class Main extends CI_Controller {
 
 		echo json_encode($msg);
 	}
+
+	public function pesquisar() {
+		// Pesquisar tarefas pelo nome
+		$this->load->model('Pesquisar_model');
+		$result = $this->Pesquisar_model->pesquisar();
+
+		echo json_encode($result);
+	}
 }
 
 ?>
